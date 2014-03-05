@@ -1,3 +1,11 @@
+var readline = require('readline');
+
+var READER = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+
 (function (root) {
   var TTT = root.TTT = (root.TTT || {});
 
@@ -14,11 +22,20 @@
     };
   };
 
-  Game.prototype.win = function() {
-    diagonals = this.diagonals
-    columns = this.columns
-    var rows = this.grid.concat(columns).concat(diagonals);
+  Game.prototype.boardFilled = function() {
+    for(var i = 0; i < this.grid.length; i++) {
+      for(var j = 0; j < this.grid[i].length; j++) {
+        if (this.grid[i][j] === " ")
+          return false;
+      }
+    }
+    return true;
+  }
 
+  Game.prototype.win = function() {
+    diagonals = this.diagonals();
+    columns = this.columns();
+    var rows = this.grid.concat(columns).concat(diagonals);
     for (var i=0; i<(rows.length); i++) {
       row = rows[i];
       if (this.check_row(row)) {
@@ -65,12 +82,42 @@
   }
 
   Game.prototype.run = function() {
+    var that = this;
+    that.draw();
     console.log(this.current_player + " player's turn");
-    READER.question();
+    READER.question("Pick your move: ", function(input) {
+      pos = input.split(" ");
+      var row = parseInt(pos[0]);
+      var col = parseInt(pos[1]);
+      var target = that.grid[row][col];
+      if (target !== " ") {
+        console.log("Invalid move. Try again.")
+      }
+      else
+      {
+        that.grid[row][col] = that.current_player;
+        that.switchPlayer();
+        if (that.win())
+        {
+          that.draw();
+          console.log(that.winner + " won the game!");
+          READER.close();
+          return;
+        }
+      }
+      if (that.boardFilled()) {
+        that.draw();
+        console.log("It's a tie! =_=");
+        READER.close();
+        return;
+      }
+      that.run();
+    });
+
+
   }
+
 })(this);
 
 var game = new this.TTT.Game();
-console.log(game.current_player);
-game.switchPlayer();
-console.log(game.current_player);
+game.run();

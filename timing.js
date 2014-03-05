@@ -14,6 +14,4 @@ Clock.prototype.run = function() {
 
 
 var c = new Clock();
-// c.run();
-
-console.log(Object.getPrototypeOf(c.run()))
+c.run();

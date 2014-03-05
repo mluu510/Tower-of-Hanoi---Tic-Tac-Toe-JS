@@ -7,6 +7,7 @@ var READER = readline.createInterface({
 
 (function (root) {
   var Hanoi = root.Hanoi = (root.Hanoi || {});
+
   var Game = Hanoi.Game = function() {
     this.towers = [[3,2,1],[],[]];
     this.winTower = [3,2,1]
